@@ -60,32 +60,36 @@ class _MyHomePageState extends State<MyHomePage> {
             : throw UnimplementedError(
                 "No widget implemented for index $selectedIndex"));
 
-    return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-              child: NavigationRail(
-            selectedIndex: selectedIndex,
-            extended: false,
-            destinations: [
-              NavigationRailDestination(
-                  icon: Icon(Icons.home), label: Text("Home")),
-              NavigationRailDestination(
-                  icon: Icon(Icons.favorite), label: Text("Favorites"))
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Scaffold(
+          body: Row(
+            children: [
+              SafeArea(
+                  child: NavigationRail(
+                selectedIndex: selectedIndex,
+                extended: constraints.maxWidth >= 600,
+                destinations: [
+                  NavigationRailDestination(
+                      icon: Icon(Icons.home), label: Text("Home")),
+                  NavigationRailDestination(
+                      icon: Icon(Icons.favorite), label: Text("Favorites"))
+                ],
+                onDestinationSelected: (value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
+              )),
+              Expanded(
+                  child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: page,
+              ))
             ],
-            onDestinationSelected: (value) {
-              setState(() {
-                selectedIndex = value;
-              });
-            },
-          )),
-          Expanded(
-              child: Container(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: page,
-          ))
-        ],
-      ),
+          ),
+        );
+      }
     );
   }
 }
