@@ -43,7 +43,54 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  var selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget page = selectedIndex == 0
+        ? GeneratorPage()
+        : (selectedIndex == 1
+            ? Placeholder()
+            : throw UnimplementedError(
+                "No widget implemented for index $selectedIndex"));
+
+    return Scaffold(
+      body: Row(
+        children: [
+          SafeArea(
+              child: NavigationRail(
+            selectedIndex: selectedIndex,
+            extended: false,
+            destinations: [
+              NavigationRailDestination(
+                  icon: Icon(Icons.home), label: Text("Home")),
+              NavigationRailDestination(
+                  icon: Icon(Icons.favorite), label: Text("Favorites"))
+            ],
+            onDestinationSelected: (value) {
+              setState(() {
+                selectedIndex = value;
+              });
+            },
+          )),
+          Expanded(
+              child: Container(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            child: page,
+          ))
+        ],
+      ),
+    );
+  }
+}
+
+class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -53,32 +100,30 @@ class MyHomePage extends StatelessWidget {
         ? Icons.favorite
         : Icons.favorite_border;
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            BigCard(pair: pair),
-            SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                    onPressed: () {
-                      appState.toggleFavorites();
-                    },
-                    icon: Icon(icon),
-                    label: Text("Like")),
-                    SizedBox(width: 20),
-                ElevatedButton(
-                    onPressed: () {
-                      appState.getNext();
-                    },
-                    child: Text("Regenerate")),
-              ],
-            )
-          ],
-        ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          BigCard(pair: pair),
+          SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorites();
+                  },
+                  icon: Icon(icon),
+                  label: Text("Like")),
+              SizedBox(width: 20),
+              ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text("Regenerate")),
+            ],
+          )
+        ],
       ),
     );
   }
